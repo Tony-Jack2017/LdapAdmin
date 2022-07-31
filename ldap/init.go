@@ -1,0 +1,5 @@
+package ldap
+
+func InitLdap() {
+
+}

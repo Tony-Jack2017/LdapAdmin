@@ -1,0 +1,21 @@
+## development
+system:
+  # the mode of system
+  mode: development
+  host: 0.0.0.0
+  # system running port
+  port: 8080
+
+
+# database service
+databas:
+
+
+
+# ldap service
+ldap:
+  host: 192.168.2.10
+  post: 389
+  adminDN: cn=admin,dc=iamai,dc=com
+  adminPW: 123456
+  baseDN: dc=iamai,dc=com
