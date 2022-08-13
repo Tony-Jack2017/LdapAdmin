@@ -1,9 +1,9 @@
 package config
 
 import (
+	"LdapAdmin/common/util"
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/viper"
-	"go-ldap/common/util"
 	"os"
 )
 
@@ -22,6 +22,11 @@ type SystemConfig struct {
 }
 
 type DatabaseConfig struct {
+	Host     string `yaml:"host"`
+	Port     string `yaml:"port"`
+	Username string `yaml:"username"`
+	Password string `yaml:"password"`
+	Dbname   string `yaml:"dbname"`
 }
 
 type LdapConfig struct {

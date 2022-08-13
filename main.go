@@ -1,11 +1,13 @@
 package main
 
 import (
-	"go-ldap/config"
-	"go-ldap/ldap"
+	"LdapAdmin/config"
+	"LdapAdmin/db"
+	"LdapAdmin/ldap"
 )
 
 func main() {
 	config.InitConfig()
 	ldap.InitLdap()
+	db.InitDatabase()
 }

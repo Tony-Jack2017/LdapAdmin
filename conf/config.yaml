@@ -2,6 +2,7 @@
 system:
   # the mode of system
   mode: development
+  # system start url
   host: 0.0.0.0
   # system running port
   port: 8080
@@ -9,13 +10,27 @@ system:
 
 # database service
 databas:
-
+  # database url
+  host: 127.0.0.1
+  # port
+  port: 5432
+  # the database's username
+  username: gan
+  # username's password
+  password: apis1618
+  # the database name
+  dbname: LDAP
 
 
 # ldap service
 ldap:
+  # ldap server url
   host: 192.168.2.10
+  # the server port
   post: 389
+  # the dn of administrator ldap
   adminDN: cn=admin,dc=iamai,dc=com
+  # the administrator's password
   adminPW: 123456
+  # the base dn
   baseDN: dc=iamai,dc=com
