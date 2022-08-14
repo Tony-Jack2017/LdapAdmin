@@ -16,9 +16,11 @@ type Config struct {
 }
 
 type SystemConfig struct {
-	Mode string `yaml:"mode"`
-	Host string `yaml:"host"`
-	Port string `yaml:"port"`
+	Mode         string `yaml:"mode"`
+	Host         string `yaml:"host"`
+	Port         string `yaml:"port"`
+	TokenExpired int    `yaml:"token_expired"`
+	TokenSecret  string `yaml:"token_secret"`
 }
 
 type DatabaseConfig struct {

@@ -11,5 +11,6 @@ func RegisterUserRoutes(v *gin.RouterGroup) {
 		user.POST("/add", api.AddUser)
 		user.POST("/delete", api.DeleteUser)
 		user.GET("/list", api.GetUsers)
+		user.POST("/modify", api.ModifyUser)
 	}
 }
