@@ -7,8 +7,10 @@ import (
 
 func InitRouter() {
 	r := gin.Default()
-	api := r.Group("/api")
-	RegisterBaseRoutes(api)
-	RegisterUserRoutes(api)
+	request := r.Group("/request")
+	{
+		RegisterBaseRoutes(request)
+		RegisterUserRoutes(request)
+	}
 	r.Run(config.Conf.System.Host + config.Conf.System.Port)
 }
