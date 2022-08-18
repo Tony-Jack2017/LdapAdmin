@@ -2,15 +2,16 @@ package model
 
 import (
 	"LdapAdmin/common/model"
-	"time"
+	"LdapAdmin/db"
 )
 
 type Token struct {
-	ID            int       `json:"id"`
-	Account       string    `json:"account"`
-	IP            string    `json:"ip"`
-	TokenString   string    `json:"token_string"`
-	LastLoginTime time.Time `json:"last_login_time"`
+	ID          int    `json:"id"`
+	Account     string `json:"account"`
+	IP          string `json:"ip"`
+	TokenString string `json:"token_string"`
+	LoginTime   string `json:"login_time"`
+	Active      int    `json:"active"`
 	model.StringModel
 }
 
@@ -20,16 +21,24 @@ func (token *Token) TableName() string {
 	return "ldap_admin_tokens"
 }
 
-func AddToken() {
-
+type AddTokenReq struct {
+	Account       string `json:"account"`
+	IP            string `json:"ip"`
+	TokenString   string `json:"token_string"`
+	LastLoginTime string `json:"last_login_time"`
 }
 
-func DeleteToken() {
-
+type DeleteTokenReq struct {
 }
 
-func GetTokens() {
+type GetTokensReq struct {
+}
 
+func AddToken(token Token) error {
+	if err := db.DB.Table(localToken.TableName()).Create(&token).Error; err != nil {
+		return err
+	}
+	return nil
 }
 
 func ModifyToken() {
