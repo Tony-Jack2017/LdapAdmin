@@ -1,21 +1,27 @@
 package router
 
 import (
-	"LdapAdmin/app/base/api"
+	"LdapAdmin/app/systems/api"
 	"github.com/gin-gonic/gin"
 )
 
 func RegisterBaseRoutes(v *gin.RouterGroup) {
-	base := v.Group("base")
+	group := v.Group("base")
 	{
-		base.POST("/login", api.Login)
+		group.POST("/login", api.Login)
 	}
 }
 
 func RegisterApiRoutes(v *gin.RouterGroup) {
-	_ = v.Group("api")
+	group := v.Group("api")
+	{
+		group.GET("/list", api.GetApiList)
+	}
 }
 
 func RegisterMenuRoutes(v *gin.RouterGroup) {
-	_ = v.Group("api")
+	group := v.Group("menu")
+	{
+		group.GET("/list", api.GetMenuListApi)
+	}
 }

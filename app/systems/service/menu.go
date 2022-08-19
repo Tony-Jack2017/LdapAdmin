@@ -8,7 +8,7 @@ func DeleteMenuService() {
 
 }
 
-func GetMenusService() {
+func GetMenuListService() {
 
 }
 

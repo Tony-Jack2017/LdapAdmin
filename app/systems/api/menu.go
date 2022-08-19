@@ -10,7 +10,7 @@ func DeleteMenuApi(c *gin.Context) {
 
 }
 
-func GetMenuApi(c *gin.Context) {
+func GetMenuListApi(c *gin.Context) {
 
 }
 

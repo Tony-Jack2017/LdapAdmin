@@ -1,9 +1,9 @@
 package model
 
 type Menu struct {
-	ID    int    `json:"id"`
-	Name  string `json:"name"`
-	Route string `json:"route"`
+	ID    int    `gorm:"type:int;primaryKey;autoIncrement;" json:"id"`
+	Name  string `gorm:"" json:"name"`
+	Route string `gorm:"" json:"route"`
 }
 
 var localMenu Menu

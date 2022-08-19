@@ -8,7 +8,7 @@ func DeleteApiService() {
 
 }
 
-func GetApisService() {
+func GetApiListService() {
 
 }
 

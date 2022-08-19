@@ -6,10 +6,10 @@ import (
 )
 
 type Token struct {
-	ID            int       `json:"id"`
+	ID            int       `gorm:"type:int;primaryKey;autoIncrement;comment:token's id" json:"id"`
 	Account       string    `json:"account"`
-	IP            string    `json:"ip"`
-	TokenString   string    `json:"token_string"`
+	IP            string    `gorm:"type:varchar(128);comment:the source ip of token" json:"ip"`
+	TokenString   string    `gorm:"type:varchar()" json:"token_string"`
 	LastLoginTime time.Time `json:"last_login_time"`
 	model.StringModel
 }
@@ -21,10 +21,6 @@ func (token *Token) TableName() string {
 }
 
 func AddToken() {
-
-}
-
-func DeleteToken() {
 
 }
 
