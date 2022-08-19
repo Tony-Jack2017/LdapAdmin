@@ -1,7 +1,7 @@
 package router
 
 import (
-	"LdapAdmin/app/systems/api"
+	"LdapAdmin/app/system/api"
 	"github.com/gin-gonic/gin"
 )
 
