@@ -13,3 +13,8 @@ type IntModel struct {
 	UpdatedAt int8 `json:"updated_at"`
 	DeletedAt int8 `json:"deleted_at"`
 }
+
+type PaginationOption struct {
+	Page int `form:"page" json:"page"` //pagination search page option
+	Size int `form:"size" json:"size"` //pagination search size option
+}
