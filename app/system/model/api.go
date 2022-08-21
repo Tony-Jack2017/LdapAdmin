@@ -11,3 +11,19 @@ var localApi Api
 func (a *Api) TableName() string {
 	return "ldap_admin_apis"
 }
+
+func AddApi() {
+	
+}
+
+func DeleteApi() {
+	
+}
+
+func GetApiList() {
+	
+}
+
+func ModifyApi()  {
+	
+}

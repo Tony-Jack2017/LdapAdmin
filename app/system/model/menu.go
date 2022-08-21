@@ -11,3 +11,19 @@ var localMenu Menu
 func (m *Menu) TableName() string {
 	return "ldap_admin_menus"
 }
+
+func AddMenu() {
+
+}
+
+func DeleteMenu() {
+
+}
+
+func GetMenuList() {
+
+}
+
+func ModifyMenu() {
+
+}
