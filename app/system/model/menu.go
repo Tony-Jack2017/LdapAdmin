@@ -53,8 +53,14 @@ func AddMenu(menu Menu) (int, error) {
 	return menu.ID, nil
 }
 
-func DeleteMenu() {
-
+func DeleteMenu(ids []int) error {
+	if err := db.DB.Table(localMenu.TableName()).
+		Where("id IN (?)", ids).
+		Delete(&Menu{}).
+		Error; err != nil {
+		return err
+	}
+	return nil
 }
 
 func GetMenuList() {
