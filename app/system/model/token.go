@@ -3,15 +3,14 @@ package model
 import (
 	"LdapAdmin/common/model"
 	"LdapAdmin/db"
+	"strings"
 )
 
 type Token struct {
-	ID          int    `json:"id"`
-	Account     string `json:"account"`
-	IP          string `json:"ip"`
-	TokenString string `json:"token_string"`
-	LoginTime   string `json:"login_time"`
-	Active      int    `json:"active"`
+	ID          int    `gorm:"type:int;primaryKey;autoIncrement;comment:token's id" json:"id"`
+	Account     string `gorm:"type:varchar(20);unique;not null;comment:the account of token" json:"account"`
+	IP          string `gorm:"type:varchar(15);not null;comment:the ip where will use token" json:"ip"`
+	TokenString string `gorm:"type:varchar(255);not null;comment:the token strings" json:"token_string"`
 	model.StringModel
 }
 
@@ -22,25 +21,48 @@ func (token *Token) TableName() string {
 }
 
 type AddTokenReq struct {
-	Account       string `json:"account"`
-	IP            string `json:"ip"`
-	TokenString   string `json:"token_string"`
-	LastLoginTime string `json:"last_login_time"`
-}
-
-type DeleteTokenReq struct {
+	Account     string `json:"account"`
+	IP          string `json:"ip"`
+	TokenString string `json:"token_string"`
 }
 
 type GetTokensReq struct {
+	Account string `json:"account"` //search token by account
+	IP      string `json:"IP"`      //search token by ip
 }
 
 func AddToken(token Token) error {
-	if err := db.DB.Table(localToken.TableName()).Create(&token).Error; err != nil {
+	if err := db.DB.Table(localToken.TableName()).
+		Create(&token).
+		Error; err != nil {
 		return err
 	}
 	return nil
 }
 
-func ModifyToken() {
+func GetToken(req *GetTokensReq) (*Token, error) {
+	var token Token
+	conn := db.DB.Table(localToken.TableName()).Order("id")
+	account := strings.TrimSpace(req.Account)
+	if account != "" {
+		conn = conn.Where("account = ?", account)
+	}
+	ip := strings.TrimSpace(req.IP)
+	if ip != "" {
+		conn = conn.Where("ip = ?", ip)
+	}
+	if err := conn.Find(&token).Error; err != nil {
+		return nil, err
+	}
+	return &token, nil
+}
 
+func ModifyToken(id int, token Token) error {
+	if err := db.DB.Table(localToken.TableName()).
+		Where("id = ?", id).
+		Updates(&token).
+		Error; err != nil {
+		return err
+	}
+	return nil
 }

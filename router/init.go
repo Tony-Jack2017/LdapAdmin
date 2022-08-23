@@ -5,6 +5,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// @title       LdapAdmin Server API
+// @version     1.0
+// @description This is a document for frontend
+// @host        localhost:8080
+// @BasePath    /request
+
 func InitRouter() {
 	r := gin.Default()
 	request := r.Group("/request")

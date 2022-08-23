@@ -1,15 +1,11 @@
 package model
 
-import "time"
+import (
+	"LdapAdmin/common/util"
+)
 
 type StringModel struct {
-	CreatedAt time.Time `gorm:"" json:"created_at"`
-	UpdatedAt time.Time `gorm:"" json:"updated_at"`
-	DeletedAt time.Time `gorm:"" json:"deleted_at"`
-}
-
-type IntModel struct {
-	CreatedAt int `json:"created_at"`
-	UpdatedAt int `json:"updated_at"`
-	DeletedAt int `json:"deleted_at"`
+	CreatedAt *util.LocalTime `gorm:"type:timestamp;comment:the time of created data" json:"created_at"`
+	UpdatedAt *util.LocalTime `gorm:"type:timestamp;comment:the time of updated data" json:"updated_at"`
+	DeletedAt *util.LocalTime `gorm:"type:timestamp;comment:the time of deleted data" json:"deleted_at"`
 }
