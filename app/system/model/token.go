@@ -26,7 +26,7 @@ type AddTokenReq struct {
 	TokenString string `json:"token_string"`
 }
 
-type GetTokensReq struct {
+type GetTokenReq struct {
 	Account string `json:"account"` //search token by account
 	IP      string `json:"IP"`      //search token by ip
 }
@@ -40,7 +40,7 @@ func AddToken(token Token) error {
 	return nil
 }
 
-func GetToken(req *GetTokensReq) (*Token, error) {
+func GetToken(req *GetTokenReq) (*Token, error) {
 	var token Token
 	conn := db.DB.Table(localToken.TableName()).Order("id")
 	account := strings.TrimSpace(req.Account)

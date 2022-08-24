@@ -15,7 +15,7 @@ var LDAP *ldap.Conn
 func InitLdap() {
 	conn, err := ldap.DialTLS(
 		"tls",
-		fmt.Sprintf("%s:%s", config.Conf.Ldap.Host, config.Conf.Ldap.Port),
+		fmt.Sprintf("%s:%d", config.Conf.Ldap.Host, config.Conf.Ldap.Port),
 		&tls.Config{
 			InsecureSkipVerify: true,
 		})
@@ -34,9 +34,9 @@ func InitLdap() {
 
 	LDAP = conn
 
-	showDsn := fmt.Sprintf("%s:******@tcp(%s)",
+	showDsn := fmt.Sprintf("%s:******@tcp(%d)",
 		config.Conf.Ldap.AdminDN,
-		config.Conf.Ldap.Host+config.Conf.Ldap.Port,
+		fmt.Sprintf("%s:%d", config.Conf.Ldap.Host, config.Conf.Ldap.Port),
 	)
 
 	util.PrintlnSuccess("connect ldap server success >>>>")

@@ -3,6 +3,7 @@ package api
 import (
 	"LdapAdmin/app/system/model"
 	"LdapAdmin/app/system/service"
+	"LdapAdmin/common/constant"
 	model2 "LdapAdmin/common/model"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -23,7 +24,7 @@ func Login(c *gin.Context) {
 	var req model.LoginReq
 	if err := c.ShouldBindJSON(req); err != nil {
 		c.JSON(http.StatusBadRequest, model2.ResponseErr{
-			Code:   10452,
+			Code:   constant.ParamsError,
 			ErrMsg: err.Error(),
 		})
 		return

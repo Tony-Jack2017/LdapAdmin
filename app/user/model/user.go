@@ -3,6 +3,8 @@ package model
 import (
 	"LdapAdmin/common/model"
 	"LdapAdmin/common/util"
+	"LdapAdmin/db"
+	"strings"
 )
 
 type User struct {
@@ -25,6 +27,8 @@ type User struct {
 	model.StringModel
 }
 
+var localUser User
+
 func (u *User) TableName() string {
 	return "ldap_admin_users"
 }
@@ -35,7 +39,12 @@ type AddUserReq struct {
 type DeleteUserReq struct {
 }
 
-type GetUsersReq struct {
+type GetUserListReq struct {
+}
+
+type GetUserInfoReq struct {
+	ID      int    `form:"id" json:"id" binding:"required"` //get user info by user's id
+	Account string `form:"account" json:"account"`          //get user info by user's account
 }
 
 type ModifyUserReq struct {
@@ -47,7 +56,23 @@ func AddUser() {
 func DeleteUser() {
 }
 
-func GetUsers() {
+func GetUserList() {
+}
+
+func GetUserInfo(req *GetUserInfoReq) (*User, error) {
+	var user User
+	conn := db.DB.Table(localUser.TableName())
+	if req.ID != 0 {
+		conn = conn.Where("id = ?", req.ID)
+	}
+	account := strings.TrimSpace(req.Account)
+	if account != "" {
+		conn = conn.Where("account = ?", account)
+	}
+	if err := conn.Error; err != nil {
+		return nil, err
+	}
+	return &user, nil
 }
 
 func ModifyUser() {

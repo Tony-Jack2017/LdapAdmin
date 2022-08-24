@@ -7,13 +7,15 @@ system:
   # system running port
   port: 8080
   # token expired time (h)
-  token_expired: 24
+  tokenExpired: 24
   # token secret
-  token_secret: IAMAI
+  tokenSecret: IAMAI
+  # store keys folder
+  rsaKeyFolder: ./keys
 
 
 # database service
-databas:
+database:
   # database url
   host: 127.0.0.1
   # port
@@ -31,7 +33,7 @@ ldap:
   # ldap server url
   host: 192.168.2.10
   # the server port
-  post: 389
+  port: 389
   # the dn of administrator ldap
   adminDN: cn=admin,dc=iamai,dc=com
   # the administrator's password

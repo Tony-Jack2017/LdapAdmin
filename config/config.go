@@ -1,7 +1,7 @@
 package config
 
 import (
-	"LdapAdmin/common/util"
+	"fmt"
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/viper"
 	"os"
@@ -10,17 +10,18 @@ import (
 var Conf Config
 
 type Config struct {
-	System   *SystemConfig
-	Database *DatabaseConfig
-	Ldap     *LdapConfig
+	System   *SystemConfig   `json:"system"`
+	Database *DatabaseConfig `json:"database"`
+	Ldap     *LdapConfig     `json:"ldap"`
 }
 
 type SystemConfig struct {
 	Mode         string `yaml:"mode"`
 	Host         string `yaml:"host"`
 	Port         string `yaml:"port"`
-	TokenExpired int    `yaml:"token_expired"`
-	TokenSecret  string `yaml:"token_secret"`
+	TokenExpired int    `yaml:"tokenExpired"`
+	TokenSecret  string `yaml:"tokenSecret"`
+	RsaKeyFolder string `yaml:"rsaKeyFolder"`
 }
 
 type DatabaseConfig struct {
@@ -33,7 +34,7 @@ type DatabaseConfig struct {
 
 type LdapConfig struct {
 	Host    string `yaml:"host"`
-	Port    string `yaml:"port"`
+	Port    int    `yaml:"port"`
 	AdminDN string `yaml:"adminDN"`
 	AdminPW string `yaml:"adminPW"`
 	BaseDN  string `yaml:"baseDN"`
@@ -43,8 +44,8 @@ func InitConfig() {
 
 	workDir, err := os.Getwd()
 	if err != nil {
-		util.PrintlnDangerous("read the directory failed!!! ")
-		util.PrintlnDangerous("error: ", err.Error())
+		fmt.Println("read the directory failed!!! ")
+		fmt.Println("error: ", err.Error())
 		return
 	}
 
@@ -53,22 +54,22 @@ func InitConfig() {
 	viper.AddConfigPath(workDir + "/conf")
 
 	if err := viper.ReadInConfig(); err != nil {
-		util.PrintlnDangerous("read config failed !!!")
-		util.PrintlnDangerous("error: ", err.Error())
+		fmt.Println("read config failed !!!")
+		fmt.Println("error: ", err.Error())
 		return
 	}
 
 	if err := viper.Unmarshal(&Conf); err != nil {
-		util.PrintlnDangerous("unmarshal the config to the variable 'Conf' is failed !!!")
-		util.PrintlnDangerous("error: ", err.Error())
+		fmt.Println("unmarshal the config to the variable 'Conf' is failed !!!")
+		fmt.Println("error: ", err.Error())
 		return
 	}
 
 	// when viper change, the conf also change
 	viper.OnConfigChange(func(e fsnotify.Event) {
 		if err := viper.Unmarshal(&Conf); err != nil {
-			util.PrintlnDangerous("unmarshal the config to the variable 'Conf' is failed !!!")
-			util.PrintlnDangerous("error: ", err.Error())
+			fmt.Println("unmarshal the config to the variable 'Conf' is failed !!!")
+			fmt.Println("error: ", err.Error())
 			return
 		}
 	})

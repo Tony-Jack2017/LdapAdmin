@@ -2,12 +2,15 @@ package main
 
 import (
 	"LdapAdmin/config"
-	"LdapAdmin/db"
-	"LdapAdmin/ldap"
 )
 
 func main() {
 	config.InitConfig()
-	ldap.InitLdap()
-	db.InitDatabase()
+	//ldap.InitLdap()
+	//db.InitDatabase()
+
+	//generate rsa keys
+	//if err := util.GenerateRsaKey(1024, config.Conf.System.RsaKeyFolder); err != nil {
+	//	fmt.Println(err.Error())
+	//}
 }
