@@ -29,7 +29,11 @@ func Login(c *gin.Context) {
 		})
 		return
 	}
-	resp, errCode, err := service.LoginService(&req)
+	ip := c.ClientIP()
+	if ip == "::1" {
+		ip = "127.0.0.1"
+	}
+	resp, errCode, err := service.LoginService(&req, ip)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, model2.ResponseErr{
 			Code:   errCode,

@@ -7,16 +7,19 @@ import (
 
 type Api struct {
 	ID          int    `gorm:"type:int;primaryKey;autoIncrement;not null;comment:the id of api" json:"id"`
-	ApiGroupID  int    `gorm:"type:int;not null;comment:the id of group which the api belong" json:"api_group_id"`
+	Active      int    `gorm:"type:int;not null;comment:the active status of api" json:"active"`
 	Name        string `gorm:"type:varchar(128);not null;comment:the name of api" json:"name"`
 	Path        string `gorm:"type:varchar(100);not null;comment:the path of api" json:"path"`
 	Description string `gorm:"type:varchar(510);not null;comment:the description of api_group" json:"description"`
+	ApiGroupID  int    `gorm:"type:int;not null;comment:the id of group which the api belong" json:"api_group_id"`
 	model.StringModel
 }
 
 type ApiGroup struct {
 	ID          int    `gorm:"type:int;primaryKey;autoIncrement;not null;comment:the id of api_group" json:"id"`
+	Active      int    `gorm:"type:int;not null;comment:the active status of api_group" json:"active"`
 	Name        string `gorm:"type:varchar(20);not null;comment:the name of api_group" json:"name"`
+	Path        string `gorm:"type:varchar(50);not null;comment:the path of api_group" json:"path"`
 	Description string `gorm:"type:varchar(510);not null;comment:the description of api_group" json:"description"`
 	ApiList     []Api  `gorm:"foreignKey:api_group_id;associate_foreignKey:id" json:"apiList"`
 	model.StringModel
@@ -29,9 +32,9 @@ func (a *Api) TableName() string {
 }
 
 type AddApiReq struct {
-	Name    string `json:"name"`    //The name of api
-	Path    string `json:"path"`    //The path of api
-	Creator string `json:"creator"` //Who is created the api
+	Name        string `json:"name"`        //The name of api
+	Path        string `json:"path"`        //The path of api
+	Description string `json:"description"` //The description of api
 }
 
 type DeleteApiReq struct {
@@ -39,6 +42,11 @@ type DeleteApiReq struct {
 }
 
 type GetApiListReq struct {
+	Active      int    `form:"active"`      //Search apis by the active status of api
+	Name        string `form:"name"`        //Search apis by name
+	Path        string `form:"path"`        //Search apis by the path of api
+	Description string `form:"description"` //Search apis by description
+	ApiGroupID  int    `form:"apiGroupId"`  //Search apis by the group id of api
 }
 
 type ModifyApiReq struct {
@@ -62,8 +70,8 @@ func DeleteApi(ids []int) error {
 	return nil
 }
 
-func GetApiList() {
-
+func GetApiList(req *GetApiListReq) ([]Api, int64, error) {
+	return nil, 0, nil
 }
 
 func ModifyApi() error {

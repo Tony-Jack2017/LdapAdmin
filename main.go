@@ -9,7 +9,7 @@ func main() {
 	//ldap.InitLdap()
 	//db.InitDatabase()
 
-	//generate rsa keys
+	// $ generate rsa keys
 	//if err := util.GenerateRsaKey(1024, config.Conf.System.RsaKeyFolder); err != nil {
 	//	fmt.Println(err.Error())
 	//}

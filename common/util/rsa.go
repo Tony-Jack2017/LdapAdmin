@@ -87,19 +87,51 @@ func GenerateRsaKey(keySize int, keyDirPath string) error {
 }
 
 //
-// DecryptPassword
-// @Description: This func is for parsing the password that was encrypted by rsa public key
-// @param password: The password
-// @return []byte: The password's plaintext
-// @return error
+// EncryptPassword
+// @Description: This func is for encrypting password
+// @param plaintext: The password is not encrypted yet
+// @return func
 //
-func DecryptPassword(password string) ([]byte, error) {
-	block, err := readKeyFromFile(config.Conf.System.RsaKeyFolder + "private.pem")
+func EncryptPassword(plaintext []byte) ([]byte, error) {
+	data, err := readKeyFromFile(fmt.Sprintf("%s/%s", config.Conf.System.RsaKeyFolder, "publick.pem"))
 	if err != nil {
 		_, file, line, _ := runtime.Caller(0)
 		return nil, errors.New(fmt.Sprintf("%s:%d\n%v", file, line+1, err.Error()))
 	}
-	privateKey, errParse := x509.ParsePKCS1PrivateKey(block)
+	block, _ := pem.Decode(data)
+	publicInterface, errParse := x509.ParsePKIXPublicKey(block.Bytes)
+	if errParse != nil {
+		_, file, line, _ := runtime.Caller(0)
+		return nil, errors.New(fmt.Sprintf("%s:%d\n%v", file, line+1, errParse.Error()))
+	}
+	publicKey, flag := publicInterface.(*rsa.PublicKey)
+	if flag == false {
+		_, file, line, _ := runtime.Caller(0)
+		return nil, errors.New(fmt.Sprintf("%s:%d\n%v", file, line+1, errors.New("transform public key failed")))
+	}
+	cipherText, errEncrypt := rsa.EncryptPKCS1v15(rand.Reader, publicKey, plaintext)
+	if errEncrypt != nil {
+		_, file, line, _ := runtime.Caller(0)
+		return nil, errors.New(fmt.Sprintf("%s:%d\n%v", file, line+1, errEncrypt.Error()))
+	}
+	return cipherText, nil
+}
+
+//
+// DecryptPassword
+// @Description: This func is for parsing the password that was encrypted by rsa public key
+// @param cipherText: The password was encrypted
+// @return []byte: The password's plaintext
+// @return error
+//
+func DecryptPassword(cipherText []byte) ([]byte, error) {
+	data, err := readKeyFromFile(fmt.Sprintf("%s/%s", config.Conf.System.RsaKeyFolder, "private.pem"))
+	if err != nil {
+		_, file, line, _ := runtime.Caller(0)
+		return nil, errors.New(fmt.Sprintf("%s:%d\n%v", file, line+1, err.Error()))
+	}
+	block, _ := pem.Decode(data)
+	privateKey, errParse := x509.ParsePKCS1PrivateKey(block.Bytes)
 	if errParse != nil {
 		_, file, line, _ := runtime.Caller(0)
 		return nil, errors.New(fmt.Sprintf("%s:%d\n%v", file, line+1, errParse.Error()))
@@ -111,13 +143,12 @@ func DecryptPassword(password string) ([]byte, error) {
 		}
 	}()
 
-	plaintext, errDecrypt := rsa.DecryptPKCS1v15(rand.Reader, privateKey, []byte(password))
+	plaintext, errDecrypt := rsa.DecryptPKCS1v15(rand.Reader, privateKey, cipherText)
 	if errDecrypt != nil {
 		_, file, line, _ := runtime.Caller(0)
 		return nil, errors.New(fmt.Sprintf("%s:%d\n%v", file, line+1, errDecrypt.Error()))
 	}
 	return plaintext, err
-
 }
 
 //
@@ -127,20 +158,19 @@ func DecryptPassword(password string) ([]byte, error) {
 // @return []byte: The data by reading from the file
 //
 func readKeyFromFile(filename string) ([]byte, error) {
-	f, err := os.Open(filename)
-	var b []byte
-
+	file, err := os.Open(filename)
+	var data []byte
 	if err != nil {
-		return b, err
+		return data, err
 	}
-	defer f.Close()
-	fileInfo, _ := f.Stat()
-	b = make([]byte, fileInfo.Size())
-	_, err = f.Read(b)
+	defer file.Close()
+	fileInfo, _ := file.Stat()
+	data = make([]byte, fileInfo.Size())
+	_, err = file.Read(data)
 	if err != nil {
-		return b, err
+		return data, err
 	}
-	return b, nil
+	return data, nil
 }
 
 //
