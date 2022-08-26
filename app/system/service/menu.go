@@ -1,6 +1,9 @@
 package service
 
-import "LdapAdmin/app/system/model"
+import (
+	"LdapAdmin/app/system/model"
+	"LdapAdmin/common/util"
+)
 
 func AddMenuService(req *model.AddMenuReq) (int, error) {
 	return model.AddMenu(model.Menu{
@@ -12,11 +15,15 @@ func AddMenuService(req *model.AddMenuReq) (int, error) {
 }
 
 func DeleteMenuService(req *model.DeleteMenuReq) error {
-	return model.DeleteMenu(req.IDS)
+	return model.DeleteMenu(req)
 }
 
-func GetMenusService() {
-
+func GetMenusService(req *model.GetMenuListReq) ([]model.Menu, int64, error) {
+	req.Page, req.Size = util.FilterPageOption(req.Page, req.Size)
+	if req.Active == 0 {
+		req.Active = 1
+	}
+	return model.GetMenuList(req)
 }
 
 func ModifyMenuService(req *model.ModifyMenuReq) error {

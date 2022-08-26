@@ -32,9 +32,10 @@ func (a *Api) TableName() string {
 }
 
 type AddApiReq struct {
-	Name        string `json:"name"`        //The name of api
-	Path        string `json:"path"`        //The path of api
-	Description string `json:"description"` //The description of api
+	Name        string `json:"name"`         //The name of api
+	Path        string `json:"path"`         //The path of api
+	Description string `json:"description"`  //The description of api
+	ApiGroupID  int    `json:"api_group_id"` //The api group id that is api belong to
 }
 
 type DeleteApiReq struct {
@@ -50,6 +51,11 @@ type GetApiListReq struct {
 }
 
 type ModifyApiReq struct {
+	ID          int    `json:"id" binding:"required"` //The id that you want to modify
+	Name        string `json:"name"`                  //The name of api to modifying
+	Path        string `json:"path"`                  //The path of api to modifying
+	Description string `json:"description"`           //The description of api to modifying
+	ApiGroupID  int    `json:"api_group_id"`          //The group id of api to modifying
 }
 
 func AddApi(api Api) (int, error) {
@@ -74,6 +80,13 @@ func GetApiList(req *GetApiListReq) ([]Api, int64, error) {
 	return nil, 0, nil
 }
 
-func ModifyApi() error {
+func ModifyApi(id int, api Api) error {
+	if err := db.DB.
+		Where("id = ?", id).
+		Updates(&api).
+		Error; err != nil {
+
+	}
+
 	return nil
 }

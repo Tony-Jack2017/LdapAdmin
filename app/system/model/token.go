@@ -27,8 +27,8 @@ type AddTokenReq struct {
 }
 
 type GetTokenReq struct {
-	Account string `json:"account"` //search token by account
-	IP      string `json:"IP"`      //search token by ip
+	Account string `json:"account"` //Search token by account
+	IP      string `json:"IP"`      //Search token by ip
 }
 
 func AddToken(token Token) error {
