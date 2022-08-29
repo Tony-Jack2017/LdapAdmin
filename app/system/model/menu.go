@@ -11,7 +11,7 @@ import (
 
 type Menu struct {
 	ID          int    `gorm:"type:int;primaryKey;autoIncrement;not null;comment:menu's id" json:"id"`
-	Active      int    `gorm:"type:int;not null;comment:menu's active's status 1 active 2 inactive" json:"active"`
+	Active      int    `gorm:"type:int;not null;comment:menu's active's status 1 active 2 archived" json:"active"`
 	Status      int    `gorm:"type:int;not null;comment:menu's use's status 1 enable 2 disable" json:"status"`
 	ParentID    int    `gorm:"type:int;not null;default:0;comment:menu's parent id" json:"parent_id"`
 	Name        string `gorm:"type:varchar(255);not null;comment:menu's name" json:"name"`
@@ -37,7 +37,7 @@ type AddMenuReq struct {
 
 type DeleteMenuReq struct {
 	IDS  []int `json:"ids"`  //The array of id that is you want to delete
-	Type int   `json:"type"` //The way of deleting the menu, 1 archive 2 forever
+	Type int   `json:"type"` //The way of deleting the menu, 1 archived 2 forever
 }
 
 type GetMenuListReq struct {
