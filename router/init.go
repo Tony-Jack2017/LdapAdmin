@@ -2,6 +2,7 @@ package router
 
 import (
 	"LdapAdmin/config"
+	"fmt"
 	"github.com/gin-gonic/gin"
 )
 
@@ -23,5 +24,5 @@ func InitRouter() {
 		// user
 		RegisterUserRoutes(request)
 	}
-	r.Run(config.Conf.System.Host + config.Conf.System.Port)
+	r.Run(fmt.Sprintf("%s:%s", config.Conf.System.Host, config.Conf.System.Port))
 }

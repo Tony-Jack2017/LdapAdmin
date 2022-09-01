@@ -3,7 +3,7 @@ system:
   # the mode of system
   mode: development
   # system start url
-  host: 0.0.0.0
+  host: 127.0.0.1
   # system running port
   port: 8080
   # token expired time (h)

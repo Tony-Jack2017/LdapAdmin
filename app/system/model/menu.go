@@ -10,14 +10,15 @@ import (
 )
 
 type Menu struct {
-	ID          int    `gorm:"type:int;primaryKey;autoIncrement;not null;comment:menu's id" json:"id"`
-	Active      int    `gorm:"type:int;not null;comment:menu's active's status 1 active 2 archived" json:"active"`
-	Status      int    `gorm:"type:int;not null;comment:menu's use's status 1 enable 2 disable" json:"status"`
-	ParentID    int    `gorm:"type:int;not null;default:0;comment:menu's parent id" json:"parent_id"`
-	Name        string `gorm:"type:varchar(255);not null;comment:menu's name" json:"name"`
-	Path        string `gorm:"type:varchar(126);not null;comment:the path of route" json:"path"`
-	Description string `gorm:"type:varchar(510);comment:the description for menu" json:"description"`
-	Children    []Menu `gorm:"foreignKey:ParentID;associate_foreignKey:ID" json:"children"`
+	ID              int    `gorm:"type:int;primaryKey;autoIncrement;not null;comment:the id of menu" json:"id"`
+	Active          int    `gorm:"type:int;not null;comment:the active status of menu : 1 active 2 archived" json:"active"`
+	Status          int    `gorm:"type:int;not null;comment:the use status of menu: 1 enable 2 disable" json:"status"`
+	ParentID        int    `gorm:"type:int;not null;default:0;comment:the parent id of menu" json:"parent_id"`
+	Name            string `gorm:"type:varchar(255);not null;comment:the name of menu" json:"name"`
+	Path            string `gorm:"type:varchar(126);not null;comment:the path of route" json:"path"`
+	Description     string `gorm:"type:varchar(510);comment:the description for menu" json:"description"`
+	IsDifferentPath int    `gorm:"type:int;not null;default:1;comment:menu is allowed children has different path" json:"is_different_path"`
+	Children        []Menu `gorm:"foreignKey:ParentID;associate_foreignKey:ID" json:"children"`
 	model.StringModel
 }
 
@@ -28,24 +29,25 @@ func (m *Menu) TableName() string {
 }
 
 type AddMenuReq struct {
-	Status      int    `json:"status" binding:"required"` //Menu's used status
-	Name        string `json:"name" binding:"required"`   //Menu's name
-	Path        string `json:"path" binding:"required"`   //Menu's path
-	Description string `json:"description"`               //The description of menu
-	ParentID    int    `json:"parent_id"`                 //The id of menu's parent
+	Status          int    `json:"status" binding:"required,oneof=1 2"`            //Menu's used status
+	Name            string `json:"name" binding:"required"`                        //Menu's name
+	Path            string `json:"path" binding:"required"`                        //Menu's path
+	IsDifferentPath int    `json:"is_different_path" binding:"required,oneof=1 2"` //Menu's is_different_path
+	Description     string `json:"description"`                                    //The description of menu
+	ParentID        int    `json:"parent_id"`                                      //The id of menu's parent
 }
 
 type DeleteMenuReq struct {
-	IDS  []int `json:"ids"`  //The array of id that is you want to delete
-	Type int   `json:"type"` //The way of deleting the menu, 1 archived 2 forever
+	IDS  []int `json:"ids" binding:"gt=0"`       //The array of id that is you want to delete
+	Type int   `json:"type" binding:"oneof=1 2"` //The way of deleting the menu, 1 archived 2 forever
 }
 
 type GetMenuListReq struct {
-	Active      int    `json:"active"`      //Search menu's by active
+	Active      int    `form:"active"`      //Search menu's by active
 	Name        string `form:"name"`        //Search menus by name
 	Path        string `form:"path"`        //Search menus by path
 	Description string `form:"description"` //Search menus by description
-	ParentID    int    `json:"parent_id"`   //Search menus by parent id
+	ParentID    int    `form:"parent_id"`   //Search menus by parent id
 	model.PaginationOption
 }
 
@@ -89,7 +91,6 @@ func DeleteMenu(req *DeleteMenuReq) error {
 	default:
 		return errors.New("the request type of delete menu is only supported 1 or 2")
 	}
-
 	return nil
 }
 

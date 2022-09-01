@@ -22,6 +22,9 @@ func RegisterApiRoutes(v *gin.RouterGroup) {
 func RegisterMenuRoutes(v *gin.RouterGroup) {
 	group := v.Group("menu")
 	{
-		group.GET("/list", api.GetMenuListApi)
+		group.GET("/list", api.GetMenuList)
+		group.POST("/add", api.AddMenu)
+		group.POST("/delete", api.DeleteMenu)
+		group.POST("/modify", api.ModifyMenu)
 	}
 }

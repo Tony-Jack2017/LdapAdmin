@@ -7,7 +7,7 @@ import (
 )
 
 type Token struct {
-	ID          int    `gorm:"type:int;primaryKey;autoIncrement;comment:token's id" json:"id"`
+	ID          int    `gorm:"type:int;primaryKey;autoIncrement;comment:the id of token" json:"id"`
 	Account     string `gorm:"type:varchar(20);unique;not null;comment:the account of token" json:"account"`
 	IP          string `gorm:"type:varchar(15);not null;comment:the ip where will use token" json:"ip"`
 	TokenString string `gorm:"type:varchar(255);not null;comment:the token strings" json:"token_string"`
