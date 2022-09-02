@@ -13,12 +13,12 @@ type Menu struct {
 	ID              int    `gorm:"type:int;primaryKey;autoIncrement;not null;comment:the id of menu" json:"id"`
 	Active          int    `gorm:"type:int;not null;comment:the active status of menu : 1 active 2 archived" json:"active"`
 	Status          int    `gorm:"type:int;not null;comment:the use status of menu: 1 enable 2 disable" json:"status"`
-	ParentID        int    `gorm:"type:int;not null;default:0;comment:the parent id of menu" json:"parent_id"`
+	ParentID        *int   `gorm:"type:int;comment:the parent id of menu" json:"parent_id"`
 	Name            string `gorm:"type:varchar(255);not null;comment:the name of menu" json:"name"`
 	Path            string `gorm:"type:varchar(126);not null;comment:the path of route" json:"path"`
 	Description     string `gorm:"type:varchar(510);comment:the description for menu" json:"description"`
 	IsDifferentPath int    `gorm:"type:int;not null;default:1;comment:menu is allowed children has different path" json:"is_different_path"`
-	Children        []Menu `gorm:"foreignKey:ParentID;associate_foreignKey:ID" json:"children"`
+	Children        []Menu `gorm:"foreignKey:ParentID" json:"children"`
 	model.StringModel
 }
 
@@ -43,11 +43,12 @@ type DeleteMenuReq struct {
 }
 
 type GetMenuListReq struct {
-	Active      int    `form:"active"`      //Search menu's by active
-	Name        string `form:"name"`        //Search menus by name
-	Path        string `form:"path"`        //Search menus by path
-	Description string `form:"description"` //Search menus by description
-	ParentID    int    `form:"parent_id"`   //Search menus by parent id
+	Active      int    `form:"active" binding:"required,oneof=1 2"` //Search menu's by active: 1 active, 2 archived
+	Type        int    `form:"type" binding:"required,oneof=1 2"`   //Search type: 1 normal, 2 cascade
+	Name        string `form:"name"`                                //Search menus by name
+	Path        string `form:"path"`                                //Search menus by path
+	Description string `form:"description"`                         //Search menus by description
+	ParentID    int    `form:"parent_id"`                           //Search menus by parent id
 	model.PaginationOption
 }
 
@@ -99,11 +100,19 @@ func GetMenuList(req *GetMenuListReq) ([]Menu, int64, error) {
 	var conn *gorm.DB
 	switch req.Active {
 	case 1:
-		conn = db.DB.Table(localMenu.TableName()).Order("id")
+		conn = db.DB.Model(&Menu{}).Order("id")
 	case 2:
-		conn = db.DB.Table(localMenu.TableName()).Order("id").Unscoped()
+		conn = db.DB.Model(&Menu{}).Order("id").Unscoped()
 	default:
-		return nil, 0, errors.New("the request type of delete menu is only supported 1 or 2")
+		return nil, 0, errors.New("the request active type of get menu list is only supported 1 or 2")
+	}
+
+	switch req.Type {
+	case 1:
+	case 2:
+		conn = conn.Preload("Children", "active", 1)
+	default:
+		return nil, 0, errors.New("the request type of get menu list is only supported 1 or 2")
 	}
 
 	name := strings.TrimSpace(req.Name)
@@ -111,12 +120,15 @@ func GetMenuList(req *GetMenuListReq) ([]Menu, int64, error) {
 		conn = conn.Where("name LIKE ?", fmt.Sprintf("%%%s%%", name))
 	}
 	path := strings.TrimSpace(req.Path)
-	if name != "" {
+	if path != "" {
 		conn = conn.Where("path LIKE ?", fmt.Sprintf("%%%s%%", path))
 	}
 	description := strings.TrimSpace(req.Description)
-	if name != "" {
+	if description != "" {
 		conn = conn.Where("description LIKE ?", fmt.Sprintf("%%%s%%", description))
+	}
+	if req.Type == 2 {
+		conn = conn.Where("parent_id IS NULL")
 	}
 
 	var count int64
@@ -125,6 +137,17 @@ func GetMenuList(req *GetMenuListReq) ([]Menu, int64, error) {
 	}
 	return menus, count, nil
 
+}
+
+func GetMenuByID(id int) (*Menu, error) {
+	var menu Menu
+	if err := db.DB.Table(localMenu.TableName()).
+		Where("id = ?", id).
+		First(&menu).
+		Error; err != nil {
+
+	}
+	return &menu, nil
 }
 
 func ModifyMenu(id int, menu Menu) error {

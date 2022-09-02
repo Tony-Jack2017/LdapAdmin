@@ -6,6 +6,17 @@ import (
 )
 
 func AddMenuService(req *model.AddMenuReq) (int, error) {
+
+	var parentId *int
+
+	if req.ParentID != 0 {
+		menu, errParent := model.GetMenuByID(req.ParentID)
+		if errParent != nil {
+			return 0, errParent
+		}
+		parentId = &menu.ID
+	}
+
 	return model.AddMenu(model.Menu{
 		Active:          1,
 		Status:          req.Status,
@@ -13,7 +24,7 @@ func AddMenuService(req *model.AddMenuReq) (int, error) {
 		Path:            req.Path,
 		IsDifferentPath: req.IsDifferentPath,
 		Description:     req.Description,
-		ParentID:        req.ParentID,
+		ParentID:        parentId,
 	})
 }
 
@@ -30,10 +41,17 @@ func GetMenuListService(req *model.GetMenuListReq) ([]model.Menu, int64, error) 
 }
 
 func ModifyMenuService(req *model.ModifyMenuReq) error {
-	return model.ModifyMenu(req.ID, model.Menu{
+	err := model.ModifyMenu(req.ID, model.Menu{
 		Status:      req.Status,
 		Name:        req.Name,
 		Path:        req.Path,
 		Description: req.Description,
 	})
+	if err != nil {
+		return err
+	}
+	if req.Path != "" {
+
+	}
+	return nil
 }

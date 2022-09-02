@@ -5,7 +5,7 @@ system:
   # system start url
   host: 127.0.0.1
   # system running port
-  port: 8080
+  port: 1618
   # token expired time (h)
   tokenExpired: 24
   # token secret

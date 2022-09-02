@@ -3,6 +3,10 @@ package model
 import (
 	"LdapAdmin/common/model"
 	"LdapAdmin/db"
+	"errors"
+	"fmt"
+	"gorm.io/gorm"
+	"strings"
 )
 
 type Api struct {
@@ -89,6 +93,12 @@ type DeleteApiGroupReq struct {
 }
 
 type GetApiGroupListReq struct {
+	Active      int    `form:"active" binding:"required,oneof=1 2"` //Search group by the active status: 1 active, 2 archived
+	Type        int    `form:"type" binding:"required,oneof=1 2"`   //Search type: 1 normal, 2 cascade
+	Name        string `form:"name"`                                //Search group by the name
+	Prefix      string `form:"prefix"`                              //Search group by the prefix
+	Description string `form:"description"`                         //Search group by the description
+	model.PaginationOption
 }
 
 type ModifyApiGroupReq struct {
@@ -159,7 +169,43 @@ func DeleteApiGroup(ids []int) error {
 	return nil
 }
 
-func GetApiGroupList(req *GetApiGroupListReq) {}
+func GetApiGroupList(req *GetApiGroupListReq) ([]ApiGroup, int64, error) {
+	var groups []ApiGroup
+	var conn *gorm.DB
+	switch req.Active {
+	case 1:
+		conn = db.DB.Model(&ApiGroup{}).Order("id")
+	case 2:
+		conn = db.DB.Model(&ApiGroup{}).Order("id").Unscoped()
+	default:
+		return nil, 0, errors.New("the request active type of get menu list is only supported 1 or 2")
+	}
+	switch req.Type {
+	case 1:
+	case 2:
+		conn = conn.Preload("Children", "active", 1)
+	default:
+		return nil, 0, errors.New("the request type of get menu list is only supported 1 or 2")
+	}
+	name := req.Name
+	if name != "" {
+		conn = conn.Where("name LIKE ?", fmt.Sprintf("%%%s%%", name))
+	}
+	prefix := strings.TrimSpace(req.Prefix)
+	if prefix != "" {
+		conn = conn.Where("description LIKE ?", fmt.Sprintf("%%%s%%", prefix))
+	}
+	description := strings.TrimSpace(req.Description)
+	if description != "" {
+		conn = conn.Where("description LIKE ?", fmt.Sprintf("%%%s%%", description))
+	}
+	var count int64
+	if err := conn.Count(&count).Offset((req.Page - 1) * req.Size).Limit(req.Size).Find(&groups).Error; err != nil {
+		return nil, 0, err
+	}
+	return groups, count, nil
+
+}
 
 func ModifyApiGroup(id int, group ApiGroup) error {
 	if err := db.DB.Table(localApiGroup.TableName()).
