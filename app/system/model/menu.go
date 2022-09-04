@@ -18,7 +18,7 @@ type Menu struct {
 	Path            string `gorm:"type:varchar(126);not null;comment:the path of route" json:"path"`
 	Description     string `gorm:"type:varchar(510);comment:the description for menu" json:"description"`
 	IsDifferentPath int    `gorm:"type:int;not null;default:1;comment:menu is allowed children has different path" json:"is_different_path"`
-	Children        []Menu `gorm:"foreignKey:ParentID" json:"children"`
+	Children        []Menu `gorm:"foreignKey:ParentID" json:"children,omitempty"`
 	model.StringModel
 }
 

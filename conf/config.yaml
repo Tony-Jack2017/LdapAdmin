@@ -23,7 +23,7 @@ database:
   # the database's username
   username: gan
   # username's password
-  password: apis1618
+  password: ghj201711
   # the database name
   dbname: LDAP
 
