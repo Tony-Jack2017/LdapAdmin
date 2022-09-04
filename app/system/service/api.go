@@ -1,6 +1,9 @@
 package service
 
-import "LdapAdmin/app/system/model"
+import (
+	"LdapAdmin/app/system/model"
+	"LdapAdmin/common/util"
+)
 
 /* $ Api Service */
 
@@ -33,7 +36,7 @@ func ModifyApiService(req *model.ModifyApiReq) error {
 
 /* $ ApiGroup Service */
 
-func AddApiGroup(req *model.AddApiGroupReq) (int, error) {
+func AddApiGroupService(req *model.AddApiGroupReq) (int, error) {
 	var apiList []model.Api
 	if len(req.ApiList) != 0 {
 		for _, item := range req.ApiList {
@@ -54,7 +57,7 @@ func AddApiGroup(req *model.AddApiGroupReq) (int, error) {
 	})
 }
 
-func DeleteApiGroup(req *model.DeleteApiGroupReq) error {
+func DeleteApiGroupService(req *model.DeleteApiGroupReq) error {
 	if errGroup := model.DeleteApiGroup(req.IDS); errGroup != nil {
 		return errGroup
 	}
@@ -66,10 +69,17 @@ func DeleteApiGroup(req *model.DeleteApiGroupReq) error {
 	return nil
 }
 
-func GetApiGroupList(req *model.GetApiGroupListReq) (int64, error) {
-	return 0, nil
+func GetApiGroupListService(req *model.GetApiGroupListReq) ([]model.ApiGroup, int64, error) {
+	req.Page, req.Size = util.FilterPageOption(req.Page, req.Size)
+	if req.Active == 0 {
+		req.Active = 1
+	}
+	if req.Type == 0 {
+		req.Type = 1
+	}
+	return model.GetApiGroupList(req)
 }
 
-func ModifyApiGroup(req *model.ModifyApiGroupReq) error {
+func ModifyApiGroupService(req *model.ModifyApiGroupReq) error {
 	return nil
 }
