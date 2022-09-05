@@ -7,10 +7,10 @@ import (
 )
 
 func generateTable() {
-	//db.DB.AutoMigrate(
-	//	&model.Menu{},
-	//	&model.Token{},
-	//)
+	db.DB.AutoMigrate(
+	//&model.Menu{},
+	//&model.Token{},
+	)
 }
 
 func main() {
