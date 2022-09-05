@@ -41,23 +41,23 @@ type DeleteMenuReq struct {
 }
 
 type GetMenuListReq struct {
-	Active      int    `form:"active" binding:"oneof=0 1 2"`      //Search menu's by active: 1 active, 2 archived
-	Type        int    `form:"type" binding:"required,oneof=1 2"` //Search type: 1 normal, 2 cascade
-	Name        string `form:"name"`                              //Search menus by name
-	Path        string `form:"path"`                              //Search menus by path
-	Description string `form:"description"`                       //Search menus by description
-	ParentID    int    `form:"parent_id"`                         //Search menus by parent id
+	Active      int    `form:"active" binding:"required,oneof=1 2"` //Search menu's by active: 1 active, 2 archived
+	Type        int    `form:"type" binding:"required,oneof=1 2"`   //Search type: 1 normal, 2 cascade
+	Name        string `form:"name"`                                //Search menus by name
+	Path        string `form:"path"`                                //Search menus by path
+	Description string `form:"description"`                         //Search menus by description
+	ParentID    int    `form:"parent_id"`                           //Search menus by parent id
 	model.PaginationOption
 }
 
 type ModifyMenuReq struct {
-	ID          int    `json:"id" binding:"required"`             //The id for modify
-	Type        int    `json:"type" binding:"required,oneof=1 2"` //The type of modify: 1 normal 2 unarchived
-	Status      int    `json:"status"`                            //The new status
-	Name        string `json:"name"`                              //The new name
-	OldPath     string `json:"old_path" binding:"required"`       //The old path
-	NewPath     string `json:"new_path"`                          //The new path
-	Description string `json:"description"`                       //The new description
+	ID          int    `json:"id" binding:"required"`              //The id for modify
+	Type        int    `json:"type" binding:"required,oneof= 1 2"` //The type for modify: 1 normal, 2 unarchived
+	Status      int    `json:"status"`                             //The new status
+	Name        string `json:"name"`                               //The new name
+	OldPath     string `json:"old_path" binding:"required"`        //The old path
+	NewPath     string `json:"new_path"`                           //The new path
+	Description string `json:"description"`                        //The new description
 }
 
 func AddMenu(menu Menu) (int, error) {
@@ -72,24 +72,13 @@ func AddMenu(menu Menu) (int, error) {
 
 func DeleteMenu(req *DeleteMenuReq) error {
 	var menus []Menu
-	if err := db.DB.Table(localMenu.TableName()).
-		Where("id IN (?)", req.IDS).
-		Find(&menus).
-		Error; err != nil {
+	if err := db.DB.Where("id IN (?)", req.IDS).Find(&menus).Error; err != nil {
 		return err
 	}
 	switch req.Type {
 	case 1:
 		if err := db.DB.Table(localMenu.TableName()).
-			Where("parent_id IN (?)", req.IDS).
-			Update("active", 2).
-			Error; err != nil {
-			db.DB.Rollback()
-			return err
-		}
-		if err := db.DB.Debug().Table(localMenu.TableName()).
-			Select("Children").
-			Update("active", 2).
+			Select("Children", recursionSelect).
 			Delete(&menus).
 			Error; err != nil {
 			db.DB.Rollback()
@@ -97,7 +86,7 @@ func DeleteMenu(req *DeleteMenuReq) error {
 		}
 	case 2:
 		if err := db.DB.Table(localMenu.TableName()).Unscoped().
-			Select("Children").
+			Select("Children", recursionSelect).
 			Delete(&menus).
 			Error; err != nil {
 			db.DB.Rollback()
@@ -177,7 +166,7 @@ func ModifyMenu(id int, menu Menu, req *ModifyMenuReq) error {
 	case 2:
 		conn = conn.Update("deleted_at", nil)
 	default:
-		return errors.New("the request type of delete menu is only supported 1 or 2")
+		return errors.New("the request type of get menu list is only supported 1 or 2")
 	}
 	if err := conn.Error; err != nil {
 		db.DB.Rollback()
@@ -191,7 +180,6 @@ func ModifyMenuPathBatch(oldPath string, path string) error {
 		Where("path LIKE ?", fmt.Sprintf("%s%%", oldPath)).
 		Update("path", gorm.Expr(fmt.Sprintf("overlay(path placing '%s' from 1 for %d)", path, len(oldPath)))).
 		Error; err != nil {
-		db.DB.Rollback()
 		return err
 	}
 	return nil
@@ -201,4 +189,8 @@ func ModifyMenuPathBatch(oldPath string, path string) error {
 
 func recursionPreload(db *gorm.DB) *gorm.DB {
 	return db.Preload("Children", recursionPreload)
+}
+
+func recursionSelect(db *gorm.DB) *gorm.DB {
+	return db.Select("Children", recursionSelect)
 }
