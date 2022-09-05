@@ -18,10 +18,10 @@ func AddMenu(c *gin.Context) {
 		})
 		return
 	}
-	_, err := service.AddMenuService(&req)
+	_, code, err := service.AddMenuService(&req)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, model2.ResponseErr{
-			Code:   constant.SqlError,
+			Code:   code,
 			ErrMsg: err.Error(),
 		})
 		return

@@ -10,15 +10,14 @@ import (
 )
 
 type Menu struct {
-	ID              int    `gorm:"type:int;primaryKey;autoIncrement;not null;comment:the id of menu" json:"id"`
-	Active          int    `gorm:"type:int;not null;comment:the active status of menu : 1 active 2 archived" json:"active"`
-	Status          int    `gorm:"type:int;not null;comment:the use status of menu: 1 enable 2 disable" json:"status"`
-	ParentID        *int   `gorm:"type:int;comment:the parent id of menu" json:"parent_id"`
-	Name            string `gorm:"type:varchar(255);not null;comment:the name of menu" json:"name"`
-	Path            string `gorm:"type:varchar(126);not null;comment:the path of route" json:"path"`
-	Description     string `gorm:"type:varchar(510);comment:the description for menu" json:"description"`
-	IsDifferentPath int    `gorm:"type:int;not null;default:1;comment:menu is allowed children has different path" json:"is_different_path"`
-	Children        []Menu `gorm:"foreignKey:ParentID" json:"children,omitempty"`
+	ID          int    `gorm:"type:int;primaryKey;autoIncrement;not null;comment:the id of menu" json:"id"`
+	Active      int    `gorm:"type:int;not null;comment:the active status of menu : 1 active 2 archived" json:"active"`
+	Status      int    `gorm:"type:int;not null;comment:the use status of menu: 1 enable 2 disable" json:"status"`
+	ParentID    *int   `gorm:"type:int;comment:the parent id of menu" json:"parent_id"`
+	Name        string `gorm:"type:varchar(255);not null;comment:the name of menu" json:"name"`
+	Path        string `gorm:"type:varchar(126);unique;not null;comment:the path of route" json:"path"`
+	Description string `gorm:"type:varchar(510);comment:the description for menu" json:"description"`
+	Children    []Menu `gorm:"foreignKey:ParentID" json:"children,omitempty"`
 	model.StringModel
 }
 
@@ -29,12 +28,11 @@ func (m *Menu) TableName() string {
 }
 
 type AddMenuReq struct {
-	Status          int    `json:"status" binding:"required,oneof=1 2"`            //Menu's used status
-	Name            string `json:"name" binding:"required"`                        //Menu's name
-	Path            string `json:"path" binding:"required"`                        //Menu's path
-	IsDifferentPath int    `json:"is_different_path" binding:"required,oneof=1 2"` //Menu's is_different_path
-	Description     string `json:"description"`                                    //The description of menu
-	ParentID        int    `json:"parent_id"`                                      //The id of menu's parent
+	Status      int    `json:"status" binding:"required,oneof=1 2"` //Menu's used status
+	Name        string `json:"name" binding:"required"`             //Menu's name
+	Path        string `json:"path" binding:"required"`             //Menu's path
+	Description string `json:"description"`                         //The description of menu
+	ParentID    int    `json:"parent_id"`                           //The id of menu's parent
 }
 
 type DeleteMenuReq struct {
@@ -53,11 +51,12 @@ type GetMenuListReq struct {
 }
 
 type ModifyMenuReq struct {
-	ID          int    `json:"id" binding:"required"` //The id for modify
-	Status      int    `json:"status"`                //The new status
-	Name        string `json:"name"`                  //The new name
-	Path        string `json:"path"`                  //The new path
-	Description string `json:"description"`           //The new description
+	ID          int    `json:"id" binding:"required"`       //The id for modify
+	Status      int    `json:"status"`                      //The new status
+	Name        string `json:"name"`                        //The new name
+	OldPath     string `json:"old_path" binding:"required"` //The old path
+	NewPath     string `json:"new_path"`                    //The new path
+	Description string `json:"description"`                 //The new description
 }
 
 func AddMenu(menu Menu) (int, error) {
@@ -84,8 +83,8 @@ func DeleteMenu(req *DeleteMenuReq) error {
 	case 2:
 		if err := db.DB.Table(localMenu.TableName()).Unscoped().
 			Where("id IN (?)", req.IDS).
-			Delete(&Menu{}).
-			Error; err != nil {
+			Association("Children").
+			Delete(&Menu{}); err != nil {
 			db.DB.Rollback()
 			return err
 		}
@@ -139,13 +138,18 @@ func GetMenuList(req *GetMenuListReq) ([]Menu, int64, error) {
 
 }
 
-func GetMenuByID(id int) (*Menu, error) {
+func GetMenuByIDAndPath(id int, path string) (*Menu, error) {
 	var menu Menu
-	if err := db.DB.Table(localMenu.TableName()).
-		Where("id = ?", id).
-		First(&menu).
+	conn := db.DB.Table(localMenu.TableName())
+	if id != 0 {
+		conn.Where("id = ?", id)
+	}
+	if path != "" {
+		conn.Where("path = ?", path)
+	}
+	if err := conn.First(&menu).
 		Error; err != nil {
-
+		return nil, err
 	}
 	return &menu, nil
 }
@@ -156,6 +160,16 @@ func ModifyMenu(id int, menu Menu) error {
 		Updates(&menu).
 		Error; err != nil {
 		db.DB.Rollback()
+		return err
+	}
+	return nil
+}
+
+func ModifyMenuPathBatch(oldPath string, path string) error {
+	if err := db.DB.Table(localMenu.TableName()).
+		Where("path LIKE ?", fmt.Sprintf("%s%%", oldPath)).
+		Update("path", gorm.Expr(fmt.Sprintf("overlay(path placing '%s' from 1 for %d)", path, len(oldPath)))).
+		Error; err != nil {
 		return err
 	}
 	return nil
