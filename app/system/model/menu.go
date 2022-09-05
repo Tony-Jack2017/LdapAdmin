@@ -109,7 +109,7 @@ func GetMenuList(req *GetMenuListReq) ([]Menu, int64, error) {
 	switch req.Type {
 	case 1:
 	case 2:
-		conn = conn.Preload("Children", "active", 1)
+		conn = conn.Preload("Children", recursionPreload, "active", 1)
 	default:
 		return nil, 0, errors.New("the request type of get menu list is only supported 1 or 2")
 	}
@@ -173,4 +173,10 @@ func ModifyMenuPathBatch(oldPath string, path string) error {
 		return err
 	}
 	return nil
+}
+
+/* $ Tools */
+
+func recursionPreload(db *gorm.DB) *gorm.DB {
+	return db.Preload("Children", recursionPreload)
 }
