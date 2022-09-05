@@ -53,11 +53,12 @@ func GetMenuListService(req *model.GetMenuListReq) ([]model.Menu, int64, error) 
 }
 
 func ModifyMenuService(req *model.ModifyMenuReq) error {
-	if err := model.ModifyMenu(req.ID, model.Menu{
+	var menu = model.Menu{
 		Status:      req.Status,
 		Name:        req.Name,
 		Description: req.Description,
-	}); err != nil {
+	}
+	if err := model.ModifyMenu(req.ID, menu, req); err != nil {
 		return err
 	}
 	if req.NewPath != "" {

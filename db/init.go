@@ -25,6 +25,7 @@ func InitDatabase() {
 	if err != nil {
 		util.PrintlnDangerous("connect the database failed !!!")
 		util.PrintlnDangerous(" error: ", err.Error())
+		panic("connect the database failed !!!")
 	}
 	DB = db
 	showDsn := fmt.Sprintf("host=%s port=%s user=%s @dbname=%s",

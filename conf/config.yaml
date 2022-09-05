@@ -17,7 +17,7 @@ system:
 # database service
 database:
   # database url
-  host: 127.0.0.1
+  host: 192.168.2.5
   # port
   port: 5432
   # the database's username
