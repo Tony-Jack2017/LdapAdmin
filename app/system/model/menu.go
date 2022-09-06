@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"gorm.io/gorm"
 	"strings"
+	"time"
 )
 
 type Menu struct {
@@ -71,24 +72,14 @@ func AddMenu(menu Menu) (int, error) {
 }
 
 func DeleteMenu(req *DeleteMenuReq) error {
-	var menus []Menu
-	if err := db.DB.Where("id IN (?)", req.IDS).Find(&menus).Error; err != nil {
-		return err
-	}
 	switch req.Type {
 	case 1:
-		if err := db.DB.Table(localMenu.TableName()).
-			Select("Children", recursionSelect).
-			Delete(&menus).
-			Error; err != nil {
+		if err := recursionDelete(req.IDS, 1).Error; err != nil {
 			db.DB.Rollback()
 			return err
 		}
 	case 2:
-		if err := db.DB.Table(localMenu.TableName()).Unscoped().
-			Select("Children", recursionSelect).
-			Delete(&menus).
-			Error; err != nil {
+		if err := recursionDelete(req.IDS, 2).Error; err != nil {
 			db.DB.Rollback()
 			return err
 		}
@@ -191,6 +182,20 @@ func recursionPreload(db *gorm.DB) *gorm.DB {
 	return db.Preload("Children", recursionPreload)
 }
 
-func recursionSelect(db *gorm.DB) *gorm.DB {
-	return db.Select("Children", recursionSelect)
+func recursionDelete(ids []int, deleteType int) *gorm.DB {
+	if deleteType == 1 {
+		return db.DB.Exec("with recursive menus as ("+
+			"select * from ldap_admin_menus where id IN (?)"+
+			" union all "+
+			"select m1.* from ldap_admin_menus m1, menus m2 where m2.id = m1.parent_id"+
+			") update ldap_admin_menus set deleted_at = ?, active = ?", ids, time.Now(), 2)
+	}
+	if deleteType == 2 {
+		return db.DB.Exec("with recursive menus as ("+
+			"select * from ldap_admin_menus where id IN (?)"+
+			" union all "+
+			"select m1.* from ldap_admin_menus m1, menus m2 where m2.id = m1.parent_id"+
+			") delete from ldap_admin_menus", ids)
+	}
+	return db.DB
 }
