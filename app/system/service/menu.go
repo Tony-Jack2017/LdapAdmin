@@ -35,7 +35,7 @@ func AddMenuService(req *model.AddMenuReq) (int, int, error) {
 		}
 		return id, 0, nil
 	} else {
-		return 0, constant.SqlError, errors.New(fmt.Sprintf("The path '%s' is exist", req.Path))
+		return 0, constant.ExistError, errors.New(fmt.Sprintf("The path '%s' is exist", req.Path))
 	}
 
 }
