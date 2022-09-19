@@ -1,6 +1,7 @@
 package router
 
 import (
+	"LdapAdmin/common/middleware"
 	"LdapAdmin/config"
 	"fmt"
 	"github.com/gin-gonic/gin"
@@ -14,6 +15,7 @@ import (
 
 func InitRouter() {
 	r := gin.Default()
+	r.Use(middleware.CorsHandler())
 	request := r.Group("/request")
 	{
 		// system

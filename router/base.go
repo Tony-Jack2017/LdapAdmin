@@ -15,7 +15,21 @@ func RegisterBaseRoutes(v *gin.RouterGroup) {
 func RegisterApiRoutes(v *gin.RouterGroup) {
 	group := v.Group("api")
 	{
+		group.POST("/add", api.AddApi)
+		group.POST("/delete", api.DeleteApi)
 		group.GET("/list", api.GetApiList)
+		group.POST("/modify", api.ModifyApi)
+	}
+	RegisterApiGroupRoutes(group)
+}
+
+func RegisterApiGroupRoutes(v *gin.RouterGroup) {
+	group := v.Group("group")
+	{
+		group.POST("/add", api.AddApiGroup)
+		group.POST("/delete", api.DeleteApiGroup)
+		group.GET("/list", api.GetApiList)
+		group.POST("/modify", api.ModifyApiGroup)
 	}
 }
 

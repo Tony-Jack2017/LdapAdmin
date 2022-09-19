@@ -43,6 +43,7 @@ type DeleteMenuReq struct {
 
 type GetMenuListReq struct {
 	Active      int    `form:"active" binding:"required,oneof=1 2"` //Search menu's by active: 1 active, 2 archived
+	Status      int    `form:"status" binding:"oneof=0 1 2"`        //The status of the menu: 1 enable 2 disable
 	Type        int    `form:"type" binding:"required,oneof=1 2"`   //Search type: 1 normal, 2 cascade
 	Name        string `form:"name"`                                //Search menus by name
 	Path        string `form:"path"`                                //Search menus by path
@@ -54,7 +55,7 @@ type GetMenuListReq struct {
 type ModifyMenuReq struct {
 	ID          int    `json:"id" binding:"required"`              //The id for modify
 	Type        int    `json:"type" binding:"required,oneof= 1 2"` //The type for modify: 1 normal, 2 unarchived
-	Status      int    `json:"status"`                             //The new status
+	Status      int    `json:"status"`                             //The new status: 1 enable 2 disable
 	Name        string `json:"name"`                               //The new name
 	OldPath     string `json:"old_path" binding:"required"`        //The old path
 	NewPath     string `json:"new_path"`                           //The new path
@@ -100,7 +101,6 @@ func GetMenuList(req *GetMenuListReq) ([]Menu, int64, error) {
 	default:
 		return nil, 0, errors.New("the request active type of get menu list is only supported 1 or 2")
 	}
-
 	switch req.Type {
 	case 1:
 	case 2:
@@ -108,7 +108,6 @@ func GetMenuList(req *GetMenuListReq) ([]Menu, int64, error) {
 	default:
 		return nil, 0, errors.New("the request type of get menu list is only supported 1 or 2")
 	}
-
 	name := strings.TrimSpace(req.Name)
 	if name != "" {
 		conn = conn.Where("name LIKE ?", fmt.Sprintf("%%%s%%", name))
@@ -121,16 +120,17 @@ func GetMenuList(req *GetMenuListReq) ([]Menu, int64, error) {
 	if description != "" {
 		conn = conn.Where("description LIKE ?", fmt.Sprintf("%%%s%%", description))
 	}
+	if req.Status != 0 {
+		conn = conn.Where("status = ?", req.Status)
+	}
 	if req.Type == 2 {
 		conn = conn.Where("parent_id IS NULL")
 	}
-
 	var count int64
 	if err := conn.Count(&count).Offset((req.Page - 1) * req.Size).Limit(req.Size).Find(&menus).Error; err != nil {
 		return nil, 0, err
 	}
 	return menus, count, nil
-
 }
 
 func GetMenuByIDAndPath(id int, path string) (*Menu, error) {

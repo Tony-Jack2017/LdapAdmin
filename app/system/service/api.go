@@ -21,8 +21,12 @@ func DeleteApiService(req *model.DeleteApiReq) error {
 	return model.DeleteApi(req.IDS)
 }
 
-func GetApiListService() {
-
+func GetApiListService(req *model.GetApiListReq) ([]model.Api, int64, error) {
+	req.Page, req.Size = util.FilterPageOption(req.Page, req.Size)
+	if req.Active == 0 {
+		req.Active = 1
+	}
+	return model.GetApiList(req)
 }
 
 func ModifyApiService(req *model.ModifyApiReq) error {
@@ -31,7 +35,7 @@ func ModifyApiService(req *model.ModifyApiReq) error {
 		Path:        req.Path,
 		Description: req.Description,
 		ApiGroupID:  req.ApiGroupID,
-	})
+	}, req)
 }
 
 /* $ ApiGroup Service */
