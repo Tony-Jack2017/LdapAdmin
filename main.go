@@ -10,7 +10,7 @@ import (
 func generateTable() {
 	db.DB.AutoMigrate(
 		&model.Menu{},
-		//&model.Token{},
+		&model.Token{},
 	)
 }
 
