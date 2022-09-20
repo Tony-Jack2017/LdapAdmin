@@ -28,7 +28,7 @@ func RegisterApiGroupRoutes(v *gin.RouterGroup) {
 	{
 		group.POST("/add", api.AddApiGroup)
 		group.POST("/delete", api.DeleteApiGroup)
-		group.GET("/list", api.GetApiList)
+		group.GET("/list", api.GetApiGroupList)
 		group.POST("/modify", api.ModifyApiGroup)
 	}
 }

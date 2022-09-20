@@ -1,0 +1,42 @@
+## development
+system:
+  # the mode of system
+  mode: development
+  # system start url
+  host: 0.0.0.0
+  # system running port
+  port: 9527
+  # token expired time (h)
+  tokenExpired: 24
+  # token secret
+  tokenSecret: IAMAI
+  # store keys folder
+  rsaKeyFolder: ./keys
+
+
+# database service
+database:
+  # database url
+  host: 192.168.0.101
+  # port
+  port: 4399
+  # the database's username
+  username: gan
+  # username's password
+  password: 123456
+  # the database name
+  dbname: LDAP
+
+
+# ldap service
+ldap:
+  # ldap server url
+  host: 192.168.2.10
+  # the server port
+  port: 389
+  # the dn of administrator ldap
+  adminDN: cn=admin,dc=iamai,dc=com
+  # the administrator's password
+  adminPW: 123456
+  # the base dn
+  baseDN: dc=iamai,dc=com
