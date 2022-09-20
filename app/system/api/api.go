@@ -9,6 +9,8 @@ import (
 	"net/http"
 )
 
+/* $ Api */
+
 func AddApi(c *gin.Context) {
 	var req model.AddApiReq
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -101,6 +103,8 @@ func ModifyApi(c *gin.Context) {
 		Msg:  "Modify api success",
 	})
 }
+
+/* $ ApiGroup */
 
 func AddApiGroup(c *gin.Context) {
 	var req model.AddApiGroupReq
