@@ -1,7 +1,7 @@
 package main
 
 import (
-	"LdapAdmin/app/system/model"
+	//base "LdapAdmin/app/system/model"
 	"LdapAdmin/config"
 	"LdapAdmin/db"
 	"LdapAdmin/router"
@@ -9,9 +9,10 @@ import (
 
 func generateTable() {
 	db.DB.AutoMigrate(
-		&model.Api{},
-		&model.Menu{},
-		&model.Token{},
+	//&base.Api{},
+	//&base.ApiGroup{},
+	//&base.Menu{},
+	//&model.Token{},
 	)
 }
 

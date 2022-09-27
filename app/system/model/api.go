@@ -100,11 +100,11 @@ type DeleteApiGroupReq struct {
 }
 
 type GetApiGroupListReq struct {
-	Active      int    `form:"active" binding:"required,oneof=1 2"` //Search group by the active status: 1 active, 2 archived
-	Type        int    `form:"type" binding:"required,oneof=1 2"`   //Search type: 1 normal, 2 cascade
-	Name        string `form:"name"`                                //Search group by the name
-	Prefix      string `form:"prefix"`                              //Search group by the prefix
-	Description string `form:"description"`                         //Search group by the description
+	Active      int    `form:"active" binding:"oneof=0 1 2"` //Search group by the active status: 1 active, 2 archived
+	Type        int    `form:"type" binding:"oneof=0 1 2"`   //Search type: 1 normal, 2 cascade
+	Name        string `form:"name"`                         //Search group by the name
+	Prefix      string `form:"prefix"`                       //Search group by the prefix
+	Description string `form:"description"`                  //Search group by the description
 	model.PaginationOption
 }
 

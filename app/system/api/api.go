@@ -9,6 +9,8 @@ import (
 	"net/http"
 )
 
+/* $ Api */
+
 func AddApi(c *gin.Context) {
 	var req model.AddApiReq
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -62,7 +64,7 @@ func GetApiList(c *gin.Context) {
 		})
 		return
 	}
-	resp, total, err := model.GetApiList(&req)
+	resp, total, err := service.GetApiListService(&req)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, model2.ResponseErr{
 			Code:   constant.SqlError,
@@ -101,6 +103,8 @@ func ModifyApi(c *gin.Context) {
 		Msg:  "Modify api success",
 	})
 }
+
+/* $ ApiGroup */
 
 func AddApiGroup(c *gin.Context) {
 	var req model.AddApiGroupReq
@@ -155,7 +159,7 @@ func GetApiGroupList(c *gin.Context) {
 		})
 		return
 	}
-	resp, total, err := model.GetApiGroupList(&req)
+	resp, total, err := service.GetApiGroupListService(&req)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, model2.ResponseErr{
 			Code:   constant.SqlError,
