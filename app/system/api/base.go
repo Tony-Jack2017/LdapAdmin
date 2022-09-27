@@ -22,7 +22,7 @@ import (
 // @Route        "/request/base/login" [post]
 func Login(c *gin.Context) {
 	var req model.LoginReq
-	if err := c.ShouldBindJSON(req); err != nil {
+	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, model2.ResponseErr{
 			Code:   constant.ParamsError,
 			ErrMsg: err.Error(),

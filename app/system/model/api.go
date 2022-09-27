@@ -13,6 +13,7 @@ type Api struct {
 	ID          int    `gorm:"type:int;primaryKey;autoIncrement;not null;comment:the id of api" json:"id"`
 	Active      int    `gorm:"type:int;not null;comment:the active status of api: 1 active 2 archived" json:"active"`
 	Status      int    `gorm:"type:int;not null;comment:the status of api: 1 enable 2 disable" json:"status"`
+	Method      string `gorm:"type:varchar(20);not null;comment:the type of api" json:"method"`
 	Name        string `gorm:"type:varchar(128);not null;comment:the name of api" json:"name"`
 	Path        string `gorm:"type:varchar(100);not null;comment:the path of api" json:"path"`
 	Description string `gorm:"type:varchar(510);not null;comment:the description of api_group" json:"description"`
@@ -44,11 +45,12 @@ func (a *ApiGroup) TableName() string {
 /* $ Api */
 
 type AddApiReq struct {
-	Status      int    `json:"status" binding:"required,oneof=1 2"` //The status of api: 1 enable 2 disable
-	Name        string `json:"name" binding:"required"`             //The name of api
-	Path        string `json:"path" binding:"required"`             //The path of api
-	Description string `json:"description"`                         //The description of api
-	ApiGroupID  int    `json:"api_group_id"`                        //The api group id that is api belong to
+	Status      int    `json:"status" binding:"required,oneof=1 2"`          //The status of api: 1 enable 2 disable
+	Method      string `json:"method" binding:"required,oneof=GET POST PUT"` //The type of api: GET POST PUT
+	Name        string `json:"name" binding:"required"`                      //The name of api
+	Path        string `json:"path" binding:"required"`                      //The path of api
+	Description string `json:"description"`                                  //The description of api
+	ApiGroupID  int    `json:"api_group_id" binding:"required"`              //The api group id that is api belong to
 }
 
 type DeleteApiReq struct {
@@ -58,6 +60,7 @@ type DeleteApiReq struct {
 type GetApiListReq struct {
 	Active      int    `form:"active" binding:"required,oneof=1 2"` //Search apis by the active status of api: 1 active 2 archived
 	Status      int    `form:"status" binding:"oneof=0 1 2"`        //Search apis by the status of api: 1 enable 2 disable
+	Method      string `form:"method"`                              //The type of api: GET POST PUT
 	Name        string `form:"name"`                                //Search apis by name
 	Path        string `form:"path"`                                //Search apis by the path of api
 	Description string `form:"description"`                         //Search apis by description
@@ -69,6 +72,7 @@ type ModifyApiReq struct {
 	ID          int    `json:"id" binding:"required"`             //The id that you want to modify
 	Type        int    `json:"type" binding:"required,oneof=1 2"` //The type of modify: 1 normal, 2 unarchived
 	Status      int    `json:"status"`                            //The status of api: 1 enable 2 disable
+	Method      string `json:"method"`                            //The type of api
 	Name        string `json:"name"`                              //The name of api to modifying
 	Path        string `json:"path"`                              //The path of api to modifying
 	Description string `json:"description"`                       //The description of api to modifying
@@ -151,9 +155,9 @@ func GetApiList(req *GetApiListReq) ([]Api, int64, error) {
 	var conn *gorm.DB
 	switch req.Active {
 	case 1:
-		conn = db.DB.Model(&Menu{}).Order("id")
+		conn = db.DB.Model(&Api{}).Order("id")
 	case 2:
-		conn = db.DB.Model(&Menu{}).Order("id").Unscoped()
+		conn = db.DB.Model(&Api{}).Order("id").Unscoped()
 	default:
 		return nil, 0, errors.New("the request active type of get menu list is only supported 1 or 2")
 	}

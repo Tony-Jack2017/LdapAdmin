@@ -43,8 +43,8 @@ type DeleteMenuReq struct {
 
 type GetMenuListReq struct {
 	Active      int    `form:"active" binding:"required,oneof=1 2"` //Search menu's by active: 1 active, 2 archived
-	Status      int    `form:"status" binding:"oneof=0 1 2"`        //The status of the menu: 1 enable 2 disable
 	Type        int    `form:"type" binding:"required,oneof=1 2"`   //Search type: 1 normal, 2 cascade
+	Status      int    `form:"status" binding:"oneof=0 1 2"`        //The status of the menu: 1 enable 2 disable
 	Name        string `form:"name"`                                //Search menus by name
 	Path        string `form:"path"`                                //Search menus by path
 	Description string `form:"description"`                         //Search menus by description
@@ -55,10 +55,10 @@ type GetMenuListReq struct {
 type ModifyMenuReq struct {
 	ID          int    `json:"id" binding:"required"`              //The id for modify
 	Type        int    `json:"type" binding:"required,oneof= 1 2"` //The type for modify: 1 normal, 2 unarchived
-	Status      int    `json:"status"`                             //The new status: 1 enable 2 disable
-	Name        string `json:"name"`                               //The new name
 	OldPath     string `json:"old_path" binding:"required"`        //The old path
 	NewPath     string `json:"new_path"`                           //The new path
+	Status      int    `json:"status"`                             //The new status: 1 enable 2 disable
+	Name        string `json:"name"`                               //The new name
 	Description string `json:"description"`                        //The new description
 }
 
