@@ -64,7 +64,7 @@ func GetApiList(c *gin.Context) {
 		})
 		return
 	}
-	resp, total, err := model.GetApiList(&req)
+	resp, total, err := service.GetApiListService(&req)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, model2.ResponseErr{
 			Code:   constant.SqlError,
@@ -159,7 +159,7 @@ func GetApiGroupList(c *gin.Context) {
 		})
 		return
 	}
-	resp, total, err := model.GetApiGroupList(&req)
+	resp, total, err := service.GetApiGroupListService(&req)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, model2.ResponseErr{
 			Code:   constant.SqlError,

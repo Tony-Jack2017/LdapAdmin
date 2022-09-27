@@ -3,9 +3,9 @@ system:
   # the mode of system
   mode: development
   # system start url
-  host: 192.168.2.5
+  host: 0.0.0.0
   # system running port
-  port: 1618
+  port: 9527
   # token expired time (h)
   tokenExpired: 24
   # token secret
@@ -15,16 +15,15 @@ system:
 
 
 # database service
-
 database:
   # database url
-  host: 192.168.2.5
+  host: 192.168.0.101
   # port
-  port: 5432
+  port: 4399
   # the database's username
   username: gan
   # username's password
-  password: ghj201711
+  password: 123456
   # the database name
   dbname: LDAP
 

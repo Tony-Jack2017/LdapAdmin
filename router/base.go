@@ -12,6 +12,14 @@ func RegisterBaseRoutes(v *gin.RouterGroup) {
 	}
 }
 
+func RegisterSystemRoutes(v *gin.RouterGroup) {
+	system := v.Group("system")
+	{
+		RegisterApiRoutes(system)
+		RegisterMenuRoutes(system)
+	}
+}
+
 func RegisterApiRoutes(v *gin.RouterGroup) {
 	group := v.Group("api")
 	{

@@ -3,6 +3,7 @@ package service
 import (
 	"LdapAdmin/app/system/model"
 	"LdapAdmin/common/util"
+	"fmt"
 )
 
 /* $ Api Service */
@@ -75,6 +76,7 @@ func DeleteApiGroupService(req *model.DeleteApiGroupReq) error {
 
 func GetApiGroupListService(req *model.GetApiGroupListReq) ([]model.ApiGroup, int64, error) {
 	req.Page, req.Size = util.FilterPageOption(req.Page, req.Size)
+	fmt.Println(req.Page, req.Size)
 	if req.Active == 0 {
 		req.Active = 1
 	}
@@ -85,5 +87,5 @@ func GetApiGroupListService(req *model.GetApiGroupListReq) ([]model.ApiGroup, in
 }
 
 func ModifyApiGroupService(req *model.ModifyApiGroupReq) error {
-	return nil
+	return model.ModifyApiGroup(req.ID, model.ApiGroup{})
 }

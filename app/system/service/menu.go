@@ -14,7 +14,11 @@ func AddMenuService(req *model.AddMenuReq) (int, int, error) {
 	if req.ParentID != 0 {
 		menu, err := model.GetMenuByIDAndPath(req.ParentID, "")
 		if err != nil {
-			return 0, constant.SqlError, err
+			if !errors.Is(err, gorm.ErrRecordNotFound) {
+				return 0, constant.SqlError, err
+			} else {
+				return 0, constant.NotExistError, errors.New(fmt.Sprintf("The parent menu id %d is not found", req.ParentID))
+			}
 		}
 		parentId = &menu.ID
 	}
@@ -37,7 +41,6 @@ func AddMenuService(req *model.AddMenuReq) (int, int, error) {
 	} else {
 		return 0, constant.ExistError, errors.New(fmt.Sprintf("The path '%s' is exist", req.Path))
 	}
-
 }
 
 func DeleteMenuService(req *model.DeleteMenuReq) error {
@@ -46,9 +49,6 @@ func DeleteMenuService(req *model.DeleteMenuReq) error {
 
 func GetMenuListService(req *model.GetMenuListReq) ([]model.Menu, int64, error) {
 	req.Page, req.Size = util.FilterPageOption(req.Page, req.Size)
-	if req.Active == 0 {
-		req.Active = 1
-	}
 	return model.GetMenuList(req)
 }
 

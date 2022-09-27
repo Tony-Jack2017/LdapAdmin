@@ -16,14 +16,14 @@ import (
 func InitRouter() {
 	r := gin.Default()
 	r.Use(middleware.CorsHandler())
+	common := r.Group("/common")
+	{
+		RegisterBaseRoutes(common)
+	}
 	request := r.Group("/request")
 	{
-		// system
-		RegisterBaseRoutes(request)
-		RegisterApiRoutes(request)
-		RegisterMenuRoutes(request)
-
-		// user
+		//request.Use(middleware.JwtHandler())
+		RegisterSystemRoutes(request)
 		RegisterUserRoutes(request)
 	}
 	r.Run(fmt.Sprintf("%s:%s", config.Conf.System.Host, config.Conf.System.Port))
