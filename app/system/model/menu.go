@@ -14,7 +14,7 @@ type Menu struct {
 	ID          int    `gorm:"type:int;primaryKey;autoIncrement;not null;comment:the id of menu" json:"id"`
 	Active      int    `gorm:"type:int;not null;comment:the active status of menu : 1 active 2 archived" json:"active"`
 	Status      int    `gorm:"type:int;not null;comment:the use status of menu: 1 enable 2 disable" json:"status"`
-	ParentID    *int   `gorm:"type:int;comment:the parent id of menu" json:"parent_id"`
+	ParentID    int    `gorm:"type:int;comment:the parent id of menu" json:"parent_id"`
 	Name        string `gorm:"type:varchar(255);not null;comment:the name of menu" json:"name"`
 	Path        string `gorm:"type:varchar(126);unique;not null;comment:the path of route" json:"path"`
 	Description string `gorm:"type:varchar(510);comment:the description for menu" json:"description"`
@@ -56,7 +56,7 @@ type ModifyMenuReq struct {
 	ID          int    `json:"id" binding:"required"`              //The id for modify
 	Type        int    `json:"type" binding:"required,oneof= 1 2"` //The type for modify: 1 normal, 2 unarchived
 	OldPath     string `json:"old_path" binding:"required"`        //The old path
-	NewPath     string `json:"new_path"`                           //The new path
+	Path        string `json:"path"`                               //The new path
 	Status      int    `json:"status"`                             //The new status: 1 enable 2 disable
 	Name        string `json:"name"`                               //The new name
 	Description string `json:"description"`                        //The new description

@@ -10,7 +10,7 @@ import (
 )
 
 func AddMenuService(req *model.AddMenuReq) (int, int, error) {
-	var parentId *int
+	var parentId int
 	if req.ParentID != 0 {
 		menu, err := model.GetMenuByIDAndPath(req.ParentID, "")
 		if err != nil {
@@ -20,7 +20,7 @@ func AddMenuService(req *model.AddMenuReq) (int, int, error) {
 				return 0, constant.NotExistError, errors.New(fmt.Sprintf("The parent menu id %d is not found", req.ParentID))
 			}
 		}
-		parentId = &menu.ID
+		parentId = menu.ID
 	}
 	if _, err := model.GetMenuByIDAndPath(0, req.Path); err != nil {
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
@@ -61,9 +61,9 @@ func ModifyMenuService(req *model.ModifyMenuReq) error {
 	if err := model.ModifyMenu(req.ID, menu, req); err != nil {
 		return err
 	}
-	if req.NewPath != "" {
-		if req.OldPath != req.NewPath {
-			if err := model.ModifyMenuPathBatch(req.OldPath, req.NewPath); err != nil {
+	if req.Path != "" {
+		if req.OldPath != req.Path {
+			if err := model.ModifyMenuPathBatch(req.OldPath, req.Path); err != nil {
 				return err
 			}
 		}
