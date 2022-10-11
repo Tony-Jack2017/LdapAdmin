@@ -28,7 +28,7 @@ type ApiGroup struct {
 	Name        string `gorm:"type:varchar(20);not null;comment:the name of api_group" json:"name"`
 	Prefix      string `gorm:"type:varchar(50);unique;not null;comment:the prefix of api" json:"prefix"`
 	Description string `gorm:"type:varchar(510);;comment:the description of api_group" json:"description"`
-	ApiList     []Api  `gorm:"foreignKey:api_group_id;associate_foreignKey:id" json:"apiList,omitempty"`
+	ApiList     []Api  `gorm:"foreignKey:api_group_id;association_foreignKey:id" json:"apiList,omitempty"`
 	model.StringModel
 }
 
@@ -93,6 +93,7 @@ type GetApiListResp struct {
 /* $ ApiGroup */
 
 type AddApiGroupReq struct {
+	Status      int         `json:"status"`                    //The status of group
 	Name        string      `json:"name" binding:"required"`   //The name of group to api
 	Prefix      string      `json:"prefix" binding:"required"` //The prefix of path which belongs to group
 	Description string      `json:"description"`               //The description of group
@@ -106,6 +107,7 @@ type DeleteApiGroupReq struct {
 type GetApiGroupListReq struct {
 	Active      int    `form:"active" binding:"oneof=0 1 2"` //Search group by the active status: 1 active, 2 archived
 	Type        int    `form:"type" binding:"oneof=0 1 2"`   //Search type: 1 normal, 2 cascade
+	Status      int    `form:"status" binding:"oneof=0 1 2"` //Search status: 1 enabled, 2 disabled
 	Name        string `form:"name"`                         //Search group by the name
 	Prefix      string `form:"prefix"`                       //Search group by the prefix
 	Description string `form:"description"`                  //Search group by the description
@@ -115,7 +117,6 @@ type GetApiGroupListReq struct {
 type ModifyApiGroupReq struct {
 	ID   int `json:"id" binding:"required, oneof=1 2"`  //The id of the group will be modified
 	Type int `json:"type" binding:"required,oneof=1 2"` //The type of modify: 1 normal, 2 unarchived
-
 }
 
 /* $ Api Sql Operations */
@@ -165,9 +166,13 @@ func GetApiList(req *GetApiListReq) ([]Api, int64, error) {
 	if name != "" {
 		conn = conn.Where("name LIKE ?", fmt.Sprintf("%%%s%%", name))
 	}
+	method := strings.TrimSpace(req.Method)
+	if method != "" {
+		conn = conn.Where("method = ?", method)
+	}
 	path := strings.TrimSpace(req.Path)
 	if path != "" {
-		conn = conn.Where("path LIKE ?", fmt.Sprintf("%%%s%%", path))
+		conn = conn.Where("path LIKE ?", fmt.Sprintf("%s%%", path))
 	}
 	description := strings.TrimSpace(req.Description)
 	if description != "" {
@@ -245,7 +250,7 @@ func GetApiGroupList(req *GetApiGroupListReq) ([]ApiGroup, int64, error) {
 	}
 	prefix := strings.TrimSpace(req.Prefix)
 	if prefix != "" {
-		conn = conn.Where("description LIKE ?", fmt.Sprintf("%%%s%%", prefix))
+		conn = conn.Where("prefix LIKE ?", fmt.Sprintf("%s%%", prefix))
 	}
 	description := strings.TrimSpace(req.Description)
 	if description != "" {
