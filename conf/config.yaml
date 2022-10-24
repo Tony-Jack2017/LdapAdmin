@@ -1,4 +1,6 @@
 ## development
+
+#--------    base    --------#
 system:
   # the mode of system
   mode: development
@@ -13,9 +15,16 @@ system:
   # store keys folder
   rsaKeyFolder: ./keys
 
+#--------    database service    --------#
+redis:
+  # redis url
+  host: 192.168.2.10
+  # the port of redis
+  port: 5432
+  # the password of redis
+  password: 'apis1618'
 
-# database service
-
+#--------    database service    --------#
 database:
   # database url
   host: 192.168.2.5
@@ -28,8 +37,7 @@ database:
   # the database name
   dbname: LDAP
 
-
-# ldap service
+#--------    ldap service    --------#
 ldap:
   # ldap server url
   host: 192.168.2.10

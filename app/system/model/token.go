@@ -2,7 +2,7 @@ package model
 
 import (
 	"LdapAdmin/common/model"
-	"LdapAdmin/db"
+	"LdapAdmin/database/db"
 	"strings"
 )
 

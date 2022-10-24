@@ -3,7 +3,7 @@ package main
 import (
 	base "LdapAdmin/app/system/model"
 	"LdapAdmin/config"
-	"LdapAdmin/db"
+	"LdapAdmin/database/db"
 	"LdapAdmin/router"
 )
 

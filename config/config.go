@@ -11,6 +11,7 @@ var Conf Config
 
 type Config struct {
 	System   *SystemConfig   `json:"system"`
+	Redis    *RedisConfig    `json:"redis"`
 	Database *DatabaseConfig `json:"database"`
 	Ldap     *LdapConfig     `json:"ldap"`
 }
@@ -22,6 +23,12 @@ type SystemConfig struct {
 	TokenExpired int    `yaml:"tokenExpired"`
 	TokenSecret  string `yaml:"tokenSecret"`
 	RsaKeyFolder string `yaml:"rsaKeyFolder"`
+}
+
+type RedisConfig struct {
+	Host     string `yaml:"host"`
+	Port     string `yaml:"port"`
+	Password string `yaml:"password"`
 }
 
 type DatabaseConfig struct {
